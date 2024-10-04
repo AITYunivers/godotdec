@@ -41,6 +41,8 @@ namespace godotdec {
 					CheckMagic(inputStream.ReadInt32());
 				}
 				
+				long ensureStartOffset = inputStream.BaseStream.Position - 4;
+
 				int packFormatVersion = inputStream.ReadInt32();
 				Bio.Cout($"Package format version: {packFormatVersion}");
 				Bio.Cout($"Godot Engine version: {inputStream.ReadInt32()}.{inputStream.ReadInt32()}.{inputStream.ReadInt32()}");
@@ -71,7 +73,7 @@ namespace godotdec {
 				for (var i = 0; i < fileCount; i++) {
 					var pathLength = inputStream.ReadInt32();
 					var path = Encoding.UTF8.GetString(inputStream.ReadBytes(pathLength));
-					var fileEntry = new FileEntry(path.ToString(), inputStream.ReadInt64() + filesBaseOffset, inputStream.ReadInt64());
+					var fileEntry = new FileEntry(path.ToString(), ensureStartOffset + inputStream.ReadInt64() + filesBaseOffset, inputStream.ReadInt64());
 					fileIndex.Add(fileEntry);
 					//Bio.Debug(fileEntry);
 					inputStream.BaseStream.Skip(16);
